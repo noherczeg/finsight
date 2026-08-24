@@ -1,4 +1,15 @@
 {
-    "$schema": "./node_modules/oxfmt/configuration_schema.json",
-    "ignorePatterns": [".pi/", "openspec/", "AGENTS.md", "**/AGENTS.md", "dist/", "coverage/", "pnpm-lock.yaml"]
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "useTabs": false,
+  "tabWidth": 2,
+  "printWidth": 80,
+  "ignorePatterns": [
+    ".pi/",
+    "openspec/",
+    "AGENTS.md",
+    "**/AGENTS.md",
+    "dist/",
+    "coverage/",
+    "pnpm-lock.yaml"
+  ]
 }
