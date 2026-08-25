@@ -22,3 +22,7 @@ coverage
 
 # Vite / cache
 .vite
+
+# pi dashboard KB (auto-generated, transient)
+.pi/dashboard/kb/*.db-shm
+.pi/dashboard/kb/*.db-wal

@@ -1,3 +1,8 @@
+import { useEffect, useState } from "react";
+import { CompoundInterestLabPage } from "./lab/compound-interest/LabPage.tsx";
+
+const LAB_HASH = "#lab/compound-interest";
+
 const tickers = [
   { symbol: "AAPL", price: "231.42", change: "+1.24%", up: true },
   { symbol: "BTC", price: "67,908", change: "+3.10%", up: true },
@@ -12,16 +17,19 @@ const scenarios = [
     title: "Compound Interest Lab",
     blurb: "Watch small, steady contributions snowball across decades.",
     icon: "\u{1F4C8}",
+    href: LAB_HASH,
   },
   {
     title: "Portfolio Sandbox",
     blurb: "Balance risk and reward across simulated asset classes.",
     icon: "\u{1F9EE}",
+    href: undefined,
   },
   {
     title: "Market Crash Drills",
     blurb: "Feel a downturn safely and learn how allocation cushions it.",
     icon: "\u{1F6DF}",
+    href: undefined,
   },
 ] as const;
 
@@ -44,7 +52,20 @@ function TickerTape() {
   );
 }
 
+function useHash() {
+  const [hash, setHash] = useState(() => window.location.hash);
+  useEffect(() => {
+    const onChange = () => setHash(window.location.hash);
+    window.addEventListener("hashchange", onChange);
+    return () => window.removeEventListener("hashchange", onChange);
+  }, []);
+  return hash;
+}
+
 function App() {
+  const hash = useHash();
+  if (hash === LAB_HASH) return <CompoundInterestLabPage />;
+
   return (
     <main className="relative flex min-h-full flex-col overflow-hidden">
       {/* ambient glow */}
@@ -113,19 +134,25 @@ function App() {
         id="scenarios"
         className="relative z-10 mx-auto grid w-full max-w-6xl gap-6 px-6 pb-24 sm:grid-cols-3"
       >
-        {scenarios.map((s) => (
-          <article
-            key={s.title}
-            className="group rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur transition hover:border-mint/40 hover:bg-white/[0.06]"
-          >
-            <div className="mb-4 text-3xl">{s.icon}</div>
-            <h2 className="text-lg font-semibold text-slate-100">{s.title}</h2>
-            <p className="mt-2 text-sm text-slate-400">{s.blurb}</p>
-            <span className="mt-4 inline-block text-sm font-medium text-mint-bright opacity-0 transition group-hover:opacity-100">
-              Coming soon →
-            </span>
-          </article>
-        ))}
+        {scenarios.map((s) => {
+          const Tag = s.href ? "a" : "article";
+          return (
+            <Tag
+              key={s.title}
+              href={s.href}
+              className="group rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur transition hover:border-mint/40 hover:bg-white/[0.06]"
+            >
+              <div className="mb-4 text-3xl">{s.icon}</div>
+              <h2 className="text-lg font-semibold text-slate-100">
+                {s.title}
+              </h2>
+              <p className="mt-2 text-sm text-slate-400">{s.blurb}</p>
+              <span className="mt-4 inline-block text-sm font-medium text-mint-bright opacity-0 transition group-hover:opacity-100">
+                {s.href ? "Open lab →" : "Coming soon →"}
+              </span>
+            </Tag>
+          );
+        })}
       </section>
 
       <footer

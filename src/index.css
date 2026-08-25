@@ -35,8 +35,30 @@ body {
   animation: ticker-scroll 30s linear infinite;
 }
 
+@keyframes lab-curve-draw {
+  from {
+    stroke-dashoffset: 1200;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Entrance draw for the compound-interest curve. Uses a large dash offset that
+   animates to 0 so the line appears to draw itself. */
+.lab-curve-line {
+  stroke-dasharray: 1200;
+  animation: lab-curve-draw 1.1s ease-out forwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-ticker {
+    animation: none;
+  }
+
+  /* Keep the curve fully drawn and legible without motion. */
+  .lab-curve-line {
+    stroke-dasharray: none;
     animation: none;
   }
 }
