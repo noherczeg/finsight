@@ -1,0 +1,24 @@
+# src/lab/portfolio-sandbox
+
+Portfolio Sandbox — finsight's second simulation. Sequel to the Compound
+Interest Lab: tab 1 taught growth **compounds**; this tab teaches growth is
+**uncertain** and that the mix shapes that uncertainty. One shared asset model
+(left build panel) feeds seven lenses (right, tabbed). Deterministic closed-form
+core + a **seeded** Monte Carlo cone (reproducible) + deterministic replay of a
+bundled real-returns dataset. Pure client-side, zero runtime deps. Reached via
+hash route `#lab/portfolio-sandbox`. See change: portfolio-sandbox.
+
+| File | Purpose |
+|---|---|
+| `AGENTS.md` | This file. |
+| `Chart.tsx` | Exports `Chart`, `ChartLine`. Shared SVG renderer (zero deps): any number of lines (solid/dashed/area-fill) plus an optional Monte Carlo cone (shaded p10–p90 band + p50 line). Reuses `.lab-curve-line` draw animation (reduced-motion aware); accessible `role="img"` + `sr-only` summary always present. |
+| `LabPage.tsx` | Exports `PortfolioSandboxPage`. Full-page shell: back link (`#`), heading, `PortfolioSandbox`, not-financial-advice disclaimer (also states no allocation is suggested). |
+| `PortfolioSandbox.tsx` | Main component. Exports `PortfolioSandbox`. Left `Card`: mix builder — per-asset weight sliders (normalized to 100%), correlation dial (clamped to `minCorrelation(4)` ≈ −0.33), principal, monthly, years, fund-fee, inflation, currency + live `Expected return`/`Volatility (risk)`. Right: seven lens tabs — Personalities (predict-first name reveal), Diversify (parts vs combined risk), Sharpe, Fees & Inflation (gross/net/real chart), Monte Carlo (predict-first guess gate → seeded cone), Time Machine (historical replay w/ crash presets), Behavior (DCA vs lump + panic hold/sell drill). Lens subcomponents are file-local. |
+| `PortfolioSandbox.test.tsx` | Component tests: mix summary updates on weight/correlation change, personalities name gate, diversification benefit grows as correlation falls, Sharpe present, fee/inflation lower outcomes, cone predict-first gate, historical replay by start year, DCA vs lump, panic drill cost, disclaimer/back-link/locale currency. NOTE: fee/currency stats read the `.font-mono` value next to a Stat label; chart legend labels are disambiguated from Stat labels (e.g. `Net (after fees)` vs stat `After fees`). |
+| `format.ts` | Exports `LOCALES`, `Locale`, `formatCurrency`, `formatPercent`. `Intl.NumberFormat` currency (whole units) + percent helper. Duplicated from the compound-interest lab on purpose — labs stay self-contained, no shared "lab shell" abstraction. |
+| `model.ts` | Pure closed-form portfolio math. Exports `AssetClass`, `ASSETS` (illustrative stocks/bonds/cash/gold μ,σ,fee — teaching defaults, not forecasts), `RISK_FREE`, `SeriesPoint`, `minCorrelation` (PSD floor −1/(N−1)), `normalizeWeights`, `portfolioReturn`, `blendedFee`, `netReturn`, `portfolioVol` (single global ρ over every pair), `weightedAvgVol` (parts, no diversification), `sharpe` (null at ~0 vol), `projectMean`, `toReal`, `realSeries`. Deterministic, no deps, no randomness. |
+| `model.test.ts` | Math contracts: weight normalization, weighted-average return, fee blend, diversification (vol ≤ weighted-avg; = at ρ=1; monotone in ρ; PSD floor keeps 4-asset variance ≥ 0), Sharpe, mean-path projection, real discounting. |
+| `random.ts` | Seeded Monte Carlo. Exports `mulberry32` (deterministic PRNG), `gaussianSampler` (Box–Muller), `percentile`, `ConeInput`/`ConeBand`, `simulateCone` (per-year p10/p50/p90 across N paths; reproducible under a fixed seed), `coneMedian`. A buy-hold portfolio's annual return is a weighted sum of jointly-normal asset returns → itself normal `N(μ_p, σ_p)`, so paths sample the portfolio return directly (correlation already in σ_p) — no Cholesky. |
+| `random.test.ts` | PRNG reproducibility + range, Box–Muller mean/variance, percentile interpolation, cone reproducibility, band ordering p10 ≤ p50 ≤ p90, year-0 = principal, cone widens with volatility. |
+| `returns.ts` | Bundled static historical dataset + replay. Exports `HistoricalYear`, `HISTORICAL_KEYS`, `HISTORICAL_RETURNS` (annual decimals), `FIRST_YEAR`/`LAST_YEAR`, `historicalYearReturn`, `replayHistory` (deterministic playback, clamps horizon to available data), `availableStartYears`. **Provenance**: Aswath Damodaran (NYU Stern), *Historical Returns on Stocks, Bonds and Bills* (`histretSP`) — stocks = S&P 500 incl. dividends, bonds = 10-yr T.Bond, cash = 3-mo T.Bill, gold = spot. **Window 1971–2024**: gold was pegged under Bretton Woods pre-1971, so earlier gold returns are meaningless. Compiled into the bundle — no network at runtime. |
+| `returns.test.ts` | Dataset shape (1971 start, contiguous years, plausible ranges), single-class + blended year returns, replay determinism, 2008 crash-through-recovery path, horizon clamping. |

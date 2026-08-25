@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { CompoundInterestLabPage } from "./lab/compound-interest/LabPage.tsx";
+import { PortfolioSandboxPage } from "./lab/portfolio-sandbox/LabPage.tsx";
 
 const LAB_HASH = "#lab/compound-interest";
+const PORTFOLIO_HASH = "#lab/portfolio-sandbox";
 
 const tickers = [
   { symbol: "AAPL", price: "231.42", change: "+1.24%", up: true },
@@ -23,7 +25,7 @@ const scenarios = [
     title: "Portfolio Sandbox",
     blurb: "Balance risk and reward across simulated asset classes.",
     icon: "\u{1F9EE}",
-    href: undefined,
+    href: PORTFOLIO_HASH,
   },
   {
     title: "Market Crash Drills",
@@ -65,6 +67,7 @@ function useHash() {
 function App() {
   const hash = useHash();
   if (hash === LAB_HASH) return <CompoundInterestLabPage />;
+  if (hash === PORTFOLIO_HASH) return <PortfolioSandboxPage />;
 
   return (
     <main className="relative flex min-h-full flex-col overflow-hidden">
